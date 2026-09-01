@@ -1,0 +1,189 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #101012;
+}
+body {
+  font-family: system-ui, sans-serif;
+  color: #eee;
+}
+#scene {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+#ui {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+#ui > * {
+  pointer-events: auto;
+}
+
+.crosshair {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.crosshair-line {
+  position: absolute;
+  background: #fff;
+  box-shadow: 0 0 0 1px #000;
+}
+.crosshair-line--h {
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 2px;
+  transform: translateY(-50%);
+}
+.crosshair-line--v {
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: rgba(16, 16, 18, 0.74);
+}
+.overlay h1 {
+  font-size: 42px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.overlay p {
+  font-size: 15px;
+  color: #b9b9c0;
+}
+.overlay button {
+  padding: 12px 32px;
+  font: inherit;
+  font-size: 17px;
+  color: #101012;
+  background: #d9d6cf;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.overlay button:hover {
+  background: #fff;
+}
+.overlay button:disabled {
+  background: #6b6b6f;
+  color: #2a2a2e;
+  cursor: default;
+}
+.overlay button:disabled:hover {
+  background: #6b6b6f;
+}
+
+.levels {
+  display: flex;
+  gap: 12px;
+}
+.overlay button.level-tile {
+  width: 72px;
+  height: 72px;
+  padding: 0;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 72px;
+  text-align: center;
+}
+.overlay button.level-tile:disabled {
+  background: #2a2a2e;
+  color: #5a5a62;
+}
+.overlay button.level-tile:disabled:hover {
+  background: #2a2a2e;
+}
+
+.debug {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 14px 18px;
+  border: 1px solid #34343a;
+  border-radius: 3px;
+  background: rgba(24, 24, 28, 0.9);
+}
+.debug-title {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #7f7f88;
+}
+.debug-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #b9b9c0;
+  cursor: pointer;
+}
+.debug-row input {
+  cursor: pointer;
+}
+.overlay button.debug-button {
+  padding: 6px 14px;
+  font-size: 13px;
+  color: #d9d6cf;
+  background: #34343a;
+}
+.overlay button.debug-button:hover {
+  background: #45454d;
+}
+
+.score {
+  display: grid;
+  gap: 10px;
+  text-align: center;
+}
+.score-row {
+  display: grid;
+  gap: 2px;
+}
+.score-row span {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7f7f88;
+}
+.score-row p {
+  font-size: 17px;
+  color: #eee;
+}
+.overlay .verdict {
+  max-width: 22em;
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
+  color: #d9d6cf;
+}
+
+.is-hidden {
+  display: none;
+}
