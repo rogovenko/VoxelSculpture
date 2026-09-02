@@ -31,6 +31,10 @@ npm run lint
 
 ## GitHub Pages
 
-Сборка с `main` уезжает через Actions: [rogovenko.github.io/VoxelSculpture](https://rogovenko.github.io/VoxelSculpture/). Редактор расстановки на сайт не попадает.
+Сайт: [rogovenko.github.io/VoxelSculpture](https://rogovenko.github.io/VoxelSculpture/). Редактор расстановки на сайт не попадает.
 
-Один раз в репозитории: **Settings → Pages → Source: GitHub Actions**. Дальше достаточно пуша в `main` (или **Actions → GitHub Pages → Run workflow**).
+**Первый раз** (без этого Actions падает с `Get Pages site failed`):
+
+1. Репозиторий → **Settings → Pages**
+2. Build and deployment → Source: **GitHub Actions**
+3. Actions → GitHub Pages → **Re-run jobs** (или пуш в `main`)
