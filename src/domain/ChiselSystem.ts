@@ -9,6 +9,8 @@ import type { VoxelGrid } from './VoxelGrid';
 export class ChiselSystem {
   private holding = false;
   private oneShot = false;
+  private dpsScale = 1;
+  private protectSculpture = false;
   private readonly ruined: Uint8Array;
 
   constructor(
@@ -33,6 +35,15 @@ export class ChiselSystem {
     this.oneShot = enabled;
   }
 
+  setDpsScale(scale: number): void {
+    this.dpsScale = scale;
+  }
+
+  /** Зелёные клетки оригинала не получают урон, пока бафф активен. */
+  setProtectSculpture(enabled: boolean): void {
+    this.protectSculpture = enabled;
+  }
+
   begin(): void {
     this.holding = true;
   }
@@ -48,10 +59,11 @@ export class ChiselSystem {
     const type = this.grid.type[index];
     if (type === VoxelType.Air) return;
     if (type === VoxelType.Sculpture && this.ruined[index] === 1) return;
+    if (type === VoxelType.Sculpture && this.protectSculpture) return;
 
     const maxHp = this.grid.maxHp[index];
     const instant = this.oneShot && type === VoxelType.Marble;
-    this.grid.hp[index] -= instant ? maxHp : this.dps * dt;
+    this.grid.hp[index] -= instant ? maxHp : this.dps * this.dpsScale * dt;
 
     if (this.grid.hp[index] > 0) {
       const hpNormalized = this.grid.hp[index] / maxHp;

@@ -42,6 +42,9 @@ export class InputController {
   private rightDown = false;
   private lockPending = false;
   private lastLockLostAt = Number.NEGATIVE_INFINITY;
+  /** Esc вешает браузерный запрет ~1.4 с; программный exitLock — нет. */
+  private escUnlock = false;
+  private exitRequested = false;
   private readonly pressed = new Set<string>();
 
   constructor(
@@ -84,6 +87,7 @@ export class InputController {
 
   /** Сколько миллисекунд ещё нельзя запрашивать блокировку. */
   msUntilLockAllowed(): number {
+    if (!this.escUnlock) return 0;
     const elapsed = performance.now() - this.lastLockLostAt;
     return Math.max(0, POINTER_LOCK_COOLDOWN_MS - elapsed);
   }
@@ -94,6 +98,13 @@ export class InputController {
 
   get isChiseling(): boolean {
     return this.chiseling;
+  }
+
+  /** Снять lock из игры: магазин телефона, не Esc. */
+  exitLock(): void {
+    if (document.pointerLockElement !== this.canvas) return;
+    this.exitRequested = true;
+    document.exitPointerLock();
   }
 
   dispose(): void {
@@ -169,6 +180,8 @@ export class InputController {
     if (!wasLocked) return;
 
     this.lastLockLostAt = performance.now();
+    this.escUnlock = !this.exitRequested;
+    this.exitRequested = false;
     this.chiseling = false;
     this.rightDown = false;
     // иначе игрок продолжит идти на паузе с зажатой клавишей

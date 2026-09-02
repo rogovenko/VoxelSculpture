@@ -1,0 +1,10 @@
+---
+description: Перед работой читать оглавление знаний в Agent/, не грузить все доки.
+alwaysApply: true
+---
+
+# Знания проекта
+
+Перед задачей прочитай `Agent/project.md`, затем `Agent/skills/project-routing/SKILL.md` и **один** профильный skill. Не открывай GDD, TechPlan и ImplementationGuide без нужды.
+
+Тесты не добавляй, пока пользователь не попросил. На Windows dev-сервер: `npm.cmd run dev`.

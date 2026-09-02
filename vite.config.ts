@@ -1,6 +1,10 @@
 import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig, type Plugin } from 'vite';
 import { parseVox, voxToGame } from './src/domain/levels/vox';
+
+const root = dirname(fileURLToPath(import.meta.url));
 
 /** `.vox` → модуль с клетками уже в осях игры (Y вверх). Правка файла подхватывается HMR. */
 function voxModulePlugin(): Plugin {
@@ -21,5 +25,17 @@ function voxModulePlugin(): Plugin {
 export default defineConfig({
   base: './',
   plugins: [voxModulePlugin()],
-  build: { target: 'es2022' },
+  build: {
+    target: 'es2022',
+    rollupOptions: {
+      // Редактор расстановки — только `npm.cmd run dev` → /editor.html
+      input: resolve(root, 'index.html'),
+    },
+  },
+  // FBX и хвосты копирования (.001_) на Windows часто залочены — вотчер на них падает.
+  server: {
+    watch: {
+      ignored: ['**/assets/fbx/**', '**/*.001_', '**/*._'],
+    },
+  },
 });

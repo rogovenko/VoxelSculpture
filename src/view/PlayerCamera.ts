@@ -50,6 +50,11 @@ export class PlayerCamera {
     this.kickOffset.set(0, 0, 0);
   }
 
+  /** Телепорт без смены взгляда: после сна смотришь туда же, куда лёг. */
+  clearKick(): void {
+    this.kickOffset.set(0, 0, 0);
+  }
+
   /** ПКМ больше не отъезжает: с ног игрока отъезжать некуда, поэтому расширяется угол обзора. */
   setPulledBack(pulled: boolean): void {
     this.targetFov = pulled ? CONFIG.camera.fovPulled : CONFIG.camera.fovWork;

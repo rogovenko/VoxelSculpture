@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SculptureCraft — расстановка</title>
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="scene"></canvas>
+      <div id="ui" class="editor-ui">
+        <div class="editor-bar">
+          <button type="button" id="rotate" disabled>Крутить 90°</button>
+          <button type="button" id="save">Скачать JSON</button>
+          <label class="editor-file">
+            Открыть JSON
+            <input id="load" type="file" accept="application/json" />
+          </label>
+          <span id="status" class="editor-status">workshop</span>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/editor/main.ts"></script>
+  </body>
+</html>

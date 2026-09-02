@@ -13,7 +13,13 @@
 
 | Что | Чем рисуется | Файл |
 | --- | --- | --- |
-| Пол, стены, настилы лесов | `BoxGeometry` + `MeshLambertMaterial`, цвет из `CONFIG.colors` | `src/view/blockout.ts` |
+| Пол | `BoxGeometry` + дерево `Wood_01.png`, UV мировые | `src/view/blockout.ts` |
+| Стены комнаты | То же, кирпич `Brick_Grey_Tex.png` | `src/view/blockout.ts` |
+| Потолок | `BoxGeometry` + бетон `Concrete_Tex.png`, UV мировые | `src/view/blockout.ts` |
+| Ковёр | `SM_Prop_Rug_01.fbx`, без коллизии | `src/view/roomDecor.ts` |
+| Мебель | FBX + атлас, позы из `workshop.json` | `roomDecor.ts`, `layoutToDecor` |
+| Настилы лесов | `BoxGeometry` + `MeshLambertMaterial`, цвет `colors.blockout` | `src/view/blockout.ts` |
+| Столик `little` | `BoxGeometry` + дерево `Wood_01.png`, UV мировые | `src/view/blockout.ts`, коробка из `createLevelStage` |
 | Опоры-лестницы | То же, цвет `colors.ladder` (сиреневый) | `src/view/blockout.ts` |
 | Декорации | То же, цвет `colors.decor` | `src/view/blockout.ts` |
 | Глыба | Один `InstancedMesh` на все клетки, собственный `ShaderMaterial`. Мрамор — текстура, скульптура — плоский цвет (после заказа — палитра `.vox`) | `src/view/VoxelRenderer.ts`, `src/view/voxelMaterial.ts` |
@@ -22,7 +28,7 @@
 | Осколки и пыль | `InstancedMesh` кубиков, цвет `colors.shard` | `src/view/ShardFX.ts` |
 | Каркас клетки под прицелом | `EdgesGeometry` + `LineBasicMaterial` — единственная обводка клетки | `src/view/HighlightBox.ts` |
 | Свет и фон | `HemisphereLight` + `DirectionalLight`, фон — цвет | `src/view/SceneRoot.ts` |
-| Потолка нет | — | — |
+| Потолок | Плита на `wallTop` | `createRoom` |
 
 **Ловушка со светом.** Глыба рисуется собственным шейдером и **свет сцены игнорирует**: у неё своё направление света в юниформе `uLightDir`. Добавишь лампу — блок-аут и осколки отреагируют, глыба нет. Чтобы поменять свет на глыбе, правь `uLightDir` в `src/view/voxelMaterial.ts`.
 
@@ -34,7 +40,7 @@
 
 - **Модель сделана в метрах → умножь на 1.64.**
 - Стол — примерно `1.2` единицы высотой, дверь — `3.3`, человек — `2.95`.
-- Пол лежит на `y = 0`. Глыба `medium` — `3.5 × 6 × 3.5`, `small` — `2 × 3 × 2.5`.
+- Пол лежит на `y = 0`. Глыба `medium` — `6.5 × 8.25 × 4`, `small` — `2.75 × 3 × 2.5` на полу, `little` — `2.75 × 2.25 × 2.5` на столике высотой `0.75`.
 - Комната `24 × 24` единицы, стены до `y = 12`.
 
 Ось вверх — **Y**. У MagicaVoxel вверх Z, у части экспортов FBX тоже — разворачивай в редакторе, а не в коде.
@@ -147,15 +153,9 @@ npm run dev
 
 **Про лестницу отдельно.** Её сиреневый цвет — не украшение: это единственная интерактивная геометрия арены, и она обязана читаться как «сюда можно залезть». Заменяя её моделью, оставь ей визуальное отличие от остальной арены, иначе игрок не найдёт путь наверх.
 
-## Рецепт: добавить потолок
+## Потолок
 
-Потолка нет. Добавляется одной коробкой в `createArena`, рядом со стенами:
-
-```ts
-boxes.push(box('structure', -a, p.wallTop, -a, a, p.wallTop + w, a));
-```
-
-Проверь после этого `npm test`: потолок ниже прыжка с настила сделает часть верхней грани глыбы недостижимой, и тест досягаемости это поймает.
+Потолок уже стоит в комнате (`createRoom`): плита на `wallTop`, толщина `wallThickness`. Это сквозная декорация, уровни её не пересоздают. Опустить `wallTop` слишком низко — с настила можно упереться головой, и тест досягаемости верхней грани глыбы упадёт.
 
 ---
 
@@ -216,7 +216,7 @@ void loadModel('/models/banner.glb').then((model) => {
 });
 ```
 
-Так дешевле: физика о таком предмете вообще не узнает.
+Так дешевле: физика о таком предмете вообще не узнает. Живой пример — ковёр в `workshop.json` с `"collide": false`. Правка поз — `/editor.html` в dev.
 
 ---
 
@@ -256,7 +256,9 @@ this.voxelRenderer.setCrackAtlas(atlas);
 
 ## Пол, стены, декорации
 
-Материалы блок-аута создаются по одному на коробку в `src/view/blockout.ts`, поэтому текстуру можно тайлить под размер каждой коробки:
+Пол текстурирован в `blockout.ts`: `Wood_01.png`, UV мировые, повтор — `arena.floorTile`. Стены — модуль `assets/fbx/SM_Bld_Base_Wall_01.fbx` (`roomWalls.ts`), оба слота материала — `Brick_Grey_Tex.png`. Коробки стен невидимы, коллизия та же. Потолок — `Concrete_Tex.png`, повтор `arena.ceilingTile`. Реквизит мастерской — схема `src/domain/levels/layouts/workshop.json`, картинка `roomDecor.ts`, коллизия `layoutToDecor`. Леса и лестницы по-прежнему плоским цветом.
+
+Материалы блок-аута создаются по одному на коробку в `src/view/blockout.ts`, поэтому новую текстуру можно тайлить под размер каждой коробки:
 
 ```ts
 const map = new THREE.TextureLoader().load('/textures/concrete.png');

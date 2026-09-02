@@ -1,6 +1,9 @@
+import { LEVELS } from '../domain/levels/catalog';
+
 export interface DebugMenuCallbacks {
   onOneShotChange: (enabled: boolean) => void;
   onKeepSingleVoxel: () => void;
+  onSelectLevel: (id: string) => void;
 }
 
 /**
@@ -20,6 +23,24 @@ export class DebugMenu {
     title.className = 'debug-title';
     title.textContent = 'Отладка';
 
+    const levels = document.createElement('div');
+    levels.className = 'levels';
+    for (const level of LEVELS) {
+      const tile = document.createElement('button');
+      tile.type = 'button';
+      tile.className = 'level-tile';
+      tile.textContent = String(level.number);
+      tile.title = level.title;
+      tile.disabled = level.create === null;
+      if (level.create !== null) {
+        tile.addEventListener('click', () => {
+          tile.blur();
+          this.cb.onSelectLevel(level.id);
+        });
+      }
+      levels.appendChild(tile);
+    }
+
     const label = document.createElement('label');
     label.className = 'debug-row';
 
@@ -37,7 +58,7 @@ export class DebugMenu {
     button.textContent = 'Оставить один воксель';
     button.addEventListener('click', this.onKeepSingle);
 
-    this.element.append(title, label, button);
+    this.element.append(title, levels, label, button);
   }
 
   show(): void {

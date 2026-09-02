@@ -1,15 +1,14 @@
-import { aabb } from '../Aabb';
 import type { ArenaBox } from './arena';
+import { aabb } from '../Aabb';
+import { layoutToDecor } from './layoutToDecor';
+import type { FurnitureLayout } from './furnitureCatalog';
+import workshopJson from './layouts/workshop.json';
 
 /**
- * Декорации с коллизией — единственное место, куда их нужно добавлять.
- * Коробка отсюда попадает и в физику, и в блок-аут, поэтому картинка и препятствие
- * не могут разъехаться. Когда серую коробку заменит модель, поставь `invisible: true`:
- * коллизия останется, а рисовать её перестанут.
- *
- * Координаты — мировые единицы, `y = 0` это пол арены. Границы арены — `CONFIG.arena.halfExtent`.
+ * Декорации с коллизией. Коробки считаются из схемы `layouts/workshop.json`.
+ * Ковёр в схеме с `collide: false` — в этот список не попадает.
  */
-export const DECOR: ArenaBox[] = [];
+export const DECOR: ArenaBox[] = layoutToDecor(workshopJson as FurnitureLayout);
 
 /** Коробка декорации по мировым координатам двух углов. */
 export function decorBox(

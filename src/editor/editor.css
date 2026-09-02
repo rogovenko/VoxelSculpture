@@ -1,0 +1,36 @@
+.editor-ui {
+  pointer-events: none;
+}
+.editor-bar {
+  pointer-events: auto;
+  position: fixed;
+  left: 12px;
+  top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px;
+  background: rgba(16, 16, 18, 0.84);
+  border: 1px solid #34343a;
+}
+.editor-bar button,
+.editor-file {
+  font: inherit;
+  color: #eee;
+  background: #2a2a2e;
+  border: 1px solid #45454d;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.editor-bar button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.editor-file input {
+  display: none;
+}
+.editor-status {
+  color: #9aa;
+  font-size: 13px;
+}

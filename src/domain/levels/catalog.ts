@@ -1,12 +1,16 @@
 import { CONFIG } from '../../config';
-import { createCrossLevel } from './crossLevel';
-import { createDuckLevel } from './duckLevel';
+import { createBuddhaLevel } from './buddhaLevel';
+import { createChickLevel } from './chickLevel';
+import { createFrogLevel } from './frogLevel';
 import type { LevelData } from './LevelData';
 
 export type LevelFactory = (size: [number, number, number]) => LevelData;
 
-/** Задаёт сетку глыбы и то, будут ли леса: на `small` их нет. */
-export type LevelSize = 'small' | 'medium';
+/**
+ * Сетка глыбы и обстановка заказа:
+ * `little` — столик, `small` — на полу, `medium` — леса.
+ */
+export type LevelSize = 'little' | 'small' | 'medium';
 
 export function gridSizeFor(size: LevelSize): [number, number, number] {
   const [x, y, z] = CONFIG.grid.sizes[size];
@@ -18,17 +22,17 @@ export interface LevelDef {
   number: number;
   title: string;
   size: LevelSize;
-  /** Нет фабрики — квадратик в меню рисуется, но выбрать его нельзя. */
+  /** Нет фабрики — заказ в каталоге есть, загрузить его нельзя. */
   create: LevelFactory | null;
 }
 
 /**
- * Порядок — порядок квадратиков в стартовом меню. Новый уровень — новая запись.
+ * Порядок — очередь заказов (стол → кровать). Новый уровень — новая запись.
  */
 export const LEVELS: readonly LevelDef[] = [
-  { id: 'duck', number: 1, title: 'Утка', size: 'small', create: createDuckLevel },
-  { id: 'cross', number: 2, title: 'Крест', size: 'medium', create: createCrossLevel },
-  { id: 'coming-3', number: 3, title: 'Скоро', size: 'medium', create: null },
+  { id: 'frog', number: 1, title: 'Лягушка', size: 'little', create: createFrogLevel },
+  { id: 'chick', number: 2, title: 'Птенец', size: 'little', create: createChickLevel },
+  { id: 'buddha', number: 3, title: 'Будда', size: 'medium', create: createBuddhaLevel },
 ];
 
 export function playableLevel(id: string): LevelDef & { create: LevelFactory } {
@@ -37,4 +41,15 @@ export function playableLevel(id: string): LevelDef & { create: LevelFactory } {
     throw new Error(`Level "${id}" is not playable`);
   }
   return found as LevelDef & { create: LevelFactory };
+}
+
+/** Следующий заказ в каталоге. Нет фабрики — пропуск. После последнего — `null`. */
+export function nextPlayable(id: string): (LevelDef & { create: LevelFactory }) | null {
+  const index = LEVELS.findIndex((level) => level.id === id);
+  if (index < 0) return null;
+  for (let i = index + 1; i < LEVELS.length; i++) {
+    const level = LEVELS[i];
+    if (level.create !== null) return level as LevelDef & { create: LevelFactory };
+  }
+  return null;
 }
